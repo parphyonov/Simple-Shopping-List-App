@@ -1,5 +1,14 @@
 # shopping list proper
-shopping_list = []
+to_do_list = []
+database_path = './database.txt'
+
+# opening file with list items added during previous sessions
+def load_last_session():
+    database = open(database_path, 'r')
+    for entry in database:
+        to_do_list.append(entry[0:-1])
+    print(to_do_list)
+    database.close()
 
 # output text formatting
 def make_line(char='*', length=25):
@@ -24,10 +33,11 @@ def print_commands():
     new_line(3)
 
     print("The list of commands:")
-    print("::: ADD    ::: adds one item :::")
-    print("::: ADD -M ::: adds multiple items :::")
-    print("::: SHOW   ::: prints the current list state :::")
-    print("::: QUIT   ::: quits app :::")
+    print("::: ADD    ::: adds one item                    :::")
+    print("::: ADD -M ::: adds multiple items              :::")
+    print("::: SAVE   ::: saves current list into database :::")
+    print("::: SHOW   ::: prints the current list state    :::")
+    print("::: QUIT   ::: quits app                        :::")
 
 def accept_command():
 
@@ -41,6 +51,8 @@ def accept_command():
         output = add('single')
     elif current_command == 'ADD -M':
         output = add('multiple')
+    elif current_command == 'SAVE':
+        output = save()
     elif current_command == 'SHOW':
         output = show()
     else:
@@ -61,6 +73,14 @@ def add(argument):
             repeat = add_item()
         return True
 
+def save():
+    database = open(database_path, 'r+')
+    for item in to_do_list:
+        database.write(item + '\n')
+    database.close()
+    print('\nYour list was successfully SAVED into \'database.txt\'. Next time you use the app, the list will contain the saved changes.')
+    return True
+
 def show():
     print_list()
     return True
@@ -73,9 +93,9 @@ def add_item():
     new_item = input('Enter an item or a to-do option below (or type \'DONE\' to return to main menu):\n')
     if new_item.upper() == 'DONE':
         return False
-    shopping_list.append(new_item)
-    if new_item in shopping_list:
-        print('Item successfully added! There are {} item(s) in your list now.\n'.format(len(shopping_list)))
+    to_do_list.append(new_item)
+    if new_item in to_do_list:
+        print('Item successfully added! There are {} item(s) in your list now.\n'.format(len(to_do_list)))
         return True
 
 def print_list():
@@ -88,7 +108,7 @@ def print_list():
 
     # number of characters in list max position
     ## e.g. 333 returns 3 while 1000 returns 4, etc.
-    max_char = len(str(len(shopping_list)))
+    max_char = len(str(len(to_do_list)))
 
     # visual separator of items, inbetweener
     separator = ' ::: '
@@ -96,7 +116,7 @@ def print_list():
     # printing header
     print(header_message)
 
-    if shopping_list == []:
+    if to_do_list == []:
         # empty list case
         make_line(length = len(warning_message))
         print(warning_message)
@@ -104,32 +124,38 @@ def print_list():
     else:
         # top and bottom separator calculations
         def_line = len(header_message)
-        max_line = get_longest_item_length(shopping_list)
-        max_combo = max_line + max_char + len(separator)
+        max_line = get_longest_item_length(to_do_list)
+        max_combo = max_line + max_char + len(separator) + 2
         if max_combo > def_line:
             def_line = max_combo
         # printing out line
         make_line(length = def_line)
-        for item in shopping_list:
-            ordinar = shopping_list.index(item) + 1
+        for item in to_do_list:
+            ordinar = to_do_list.index(item) + 1
             ordinar_length = len(str(ordinar))
             offset_length = max_char - ordinar_length
-            offset = ' ' * offset_length
+            offset = ' ' * (offset_length + 1)
 
             print('{}{}{}{}'.format(offset, ordinar, separator, item))
         make_line(length = def_line)
 
 # program flow
-make_line()
-print('*** Shopping List App ***')
-print('* by Alexei Parphyonov **')
-make_line()
+def main():
+    # preparations
+    load_last_session()
 
-print_commands()
-do_continue = accept_command()
-while do_continue:
+    make_line()
+    print('*** Shopping List App ***')
+    print('* by Alexei Parphyonov **')
+    make_line()
+
     print_commands()
     do_continue = accept_command()
+    while do_continue:
+        print_commands()
+        do_continue = accept_command()
 
-print_list()
-new_line(3)
+    print_list()
+    new_line(3)
+
+main()
