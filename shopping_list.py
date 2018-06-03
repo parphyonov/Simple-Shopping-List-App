@@ -60,6 +60,8 @@ def accept_command():
         output = add('single')
     elif current_command == 'ADD -M':
         output = add('multiple')
+    elif current_command == 'ADD -I':
+        output = add('index')
     elif current_command == 'SAVE':
         output = save()
     elif current_command == 'SHOW':
@@ -109,7 +111,7 @@ def add_item():
 
 def print_list():
     # visual separation of content
-    clear()
+    new_line(3)
     # warning message
     warning_message = '--- There are no items in your list ---'
     # list header
