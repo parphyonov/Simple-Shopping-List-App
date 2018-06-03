@@ -1,13 +1,22 @@
+import os
+
 # shopping list proper
 to_do_list = []
 database_path = './database.txt'
+
+# clearing the screen
+def clear():
+    if os.name.lower() == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
 
 # opening file with list items added during previous sessions
 def load_last_session():
     database = open(database_path, 'r')
     for entry in database:
         to_do_list.append(entry[0:-1])
-    print(to_do_list)
+    # print(to_do_list)
     database.close()
 
 # output text formatting
@@ -100,7 +109,7 @@ def add_item():
 
 def print_list():
     # visual separation of content
-    new_line(3)
+    clear()
     # warning message
     warning_message = '--- There are no items in your list ---'
     # list header
